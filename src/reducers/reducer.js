@@ -1,4 +1,7 @@
 import { FETCH_ACTIONS } from "../actions"
+ /*
+    дополнить функцию-редуктор логикой обновления состояния
+*/
 
 const initialState = {
   items: [],
