@@ -5,7 +5,11 @@ import axios from "axios";
 import { toast } from 'react-custom-alert';
 import 'react-custom-alert/dist/index.css'
 import loaderGif from '/src/img/loader.gif';
+import placeholderImg from '/src/img/placeholder.jpg';
 import '/src/css/modals.css'
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Items = () => {
   const [state, dispatch] = useReducer(reducer, initialState);  
@@ -40,9 +44,11 @@ const Items = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState('')
   const [modalType, setModalType] = useState(false)
+  
 
   /* компонент модального окна */
   const Modal = ({ isModalOpen, modalContent, modalType, onClose }) => {
+
 
     if (isModalOpen !== true) {
       return null;
@@ -73,57 +79,68 @@ const Items = () => {
 
       return (
         <section className="modal">
-          <article className="modal-content p-lg-4">
-            <main className="modal-mainContents">
+          <article className="modal-content">
               <p className="modal-title">Вы уверены, что хотите удалить семинар?</p>
-              <div className="modal-button text-end">
-                <button onClick={() => confirmDel()}>Удалить</button> 
-              </div>              
-              <div className="exit-icon text-end">
+              <div className="modal-buttons">
+                <button onClick={() => confirmDel()}>Удалить</button>              
                 <button onClick={onClose}>Отмена</button>
               </div>
-            </main>
           </article>
         </section>
       );
 
     }  else if (modalType == "edit") { // функция редактирования
+      const [newDateInput, setNewDateInput] = useState(new Date());
 
       const confirmEdit = async () => {
-        try{        
- 
+        try{       
           // сюда переменные из инпутов
           let newTitle = document.querySelector("#newTitle").value;
           let newDescription = document.querySelector("#newDescription").value;
           let newDate = document.querySelector("#newDate").value;
           let newTime = document.querySelector("#newTime").value;
           let newPhoto = document.querySelector("#newPhoto").value;
-  
-          // запрос
-          let response = await axios.put('http://localhost:3000/seminars/' + modalContent.id, {
-            id: modalContent.id,
-            title: newTitle,
-            description: newDescription,
-            date: newDate,
-            time: newTime,
-            photo: newPhoto
-          })
+         
+          //валидация
+          if(!newTitle) {
+            toast.error("Пожалуйста, введите название семинара"); 
+          } else if(!newDescription){
+            toast.error("Пожалуйста, введите описание");      
+          } else if(!newDate){
+            toast.error("Пожалуйста, введите дату");                  
+          } else if (!newTime) {
+            toast.error("Пожалуйста, введите время");
+          } else {
 
-          if (response.status === 200) {
-            let currebtId = modalContent.id;
+            if (!newPhoto) {
+              newPhoto = placeholderImg //картинка-плейсхолдер, если нет ссылки
+            } 
+            // успешная валидация: запрос
+            let response = await axios.put('http://localhost:3000/seminars/' + modalContent.id, {
+              id: modalContent.id,
+              title: newTitle,
+              description: newDescription,
+              date: newDate,
+              time: newTime,
+              photo: newPhoto
+            })
 
-            // обновим состояние items
-            items = items.map(elem => {
-              if (elem.id === currebtId) {
-                return response.data;
-              } else {
-                return elem;
-              }
-            });            
-            
-            dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
-            setIsModalOpen(false);
-            toast.success("Семинар обновлен");
+            if (response.status === 200) {
+              let currebtId = modalContent.id;
+
+              // обновим состояние items
+              items = items.map(elem => {
+                if (elem.id === currebtId) {
+                  return response.data;
+                } else {
+                  return elem;
+                }
+              });            
+              
+              dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
+              setIsModalOpen(false);
+              toast.success("Семинар обновлен");
+            }
           }
         } catch(err){
           setIsModalOpen(false); 
@@ -131,35 +148,39 @@ const Items = () => {
           dispatch({type: FETCH_ACTIONS.ERROR, data: items})
         }    
       }
-
       return (
         <section className="modal">
-          <article className="modal-content p-lg-4">
-            <main className="modal-mainContents">
+          <article className="modal-content">
 
-              <label>
-                Тема: <input id="newTitle" type="text" defaultValue={modalContent.title}/>
+              <label htmlFor="newTitle">
+                Тема:
               </label>
-              <label>
-                Описание: <input id="newDescription" type="text" defaultValue={modalContent.description}/>
-              </label>
-              <label>
-                Дата: <input id="newDate" type="text" defaultValue={modalContent.date}/>
-              </label>
-              <label>
-                Время: <input id="newTime" type="text" defaultValue={modalContent.time}/>
-              </label>
-              <label>
-                Фото: <input id="newPhoto" type="text" defaultValue={modalContent.photo}/>
-              </label>
+              <input id="newTitle" type="text" defaultValue={modalContent.title}/>
 
-              <div className="modal-button text-end">
-                <button onClick={() => confirmEdit()}>Сохранить</button> 
+              <label htmlFor="newDescription">
+                Описание:
+              </label>
+              <textarea id="newDescription" defaultValue={modalContent.description}/>
+              
+              <label htmlFor="newDate">
+                Дата:
+              </label>
+              <DatePicker id="newDate" selected={newDateInput} dateFormat="dd.MM.yyyy" onChange={(date) => setNewDateInput(date)} />
+                           
+              <label htmlFor="newTime">
+                Время:
+              </label>
+              <input id="newTime" type="time" defaultValue={modalContent.time}/>
+              
+              <label htmlFor="newPhoto">
+                Фото:
+              </label>
+              <input id="newPhoto" type="text" defaultValue={modalContent.photo}/>              
+
+              <div className="modal-buttons">
+                <button onClick={() => confirmEdit()}>Сохранить</button>               
+                <button onClick={onClose}>Отмена</button>
               </div>
-              <div className="exit-icon text-end">
-              <button onClick={onClose}>Отмена</button>
-            </div>
-            </main>
           </article>
         </section>        
       );
@@ -209,17 +230,17 @@ const Items = () => {
                          {item.title}
                       </h2>
                       <p>
-                        Описание: <strong>{item.description}</strong>
+                         <strong>Описание:</strong> {item.description}
                       </p>
                       <p>
-                        Дата: <strong>{item.date}</strong>
+                        <strong>Дата:</strong> {item.date}
                       </p>
                       <p>
-                        Время: <strong>{item.time}</strong>
+                        <strong>Время:</strong> {item.time}
                       </p>
                     </div>
-                    
-                    <img src={item.photo} className="seminar-photo"/>  
+
+                    <img src={item.photo} className="seminar-photo" alt="Пожалуйста, включите VPN"/>  
                     
                     <div className="seminar-buttons">         
 

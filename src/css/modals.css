@@ -11,31 +11,68 @@
    }
    .modal-content {
     border: 1px solid #fff;
-    width: 500px;
+    width: 650px;
+    color: #242424;
     background-color: #fff;
     border-radius: 15px;
+    animation: fadeInExpand ease-in-out 0.2s both;
+    box-shadow: 0 20px 30px 0 #cbcbcb, 0 0 8px 0 #cbcbcb;
+    padding: 20px 20px;
    }
-   .exit-icon {
-    cursor: pointer;
-    font-size: 20px;
+   .modal-content label {
+    margin: 20px;
    }
    .modal-title {
-    color: #6821c3;
+    color: #242424;
     font-weight: 700;
     font-size: 30px;
     line-height: 28px;
+    text-align: center;
    }
-   .modal-image img {
-    width: 8rem;
-   }
-   .modalText {
+   .modal-text {
     text-align: justify;
    }
-   .modal-button button {
-    border: 1px solid #6821c3;
-    padding: 6px;
-    width: 8rem;
-    background-color: #6821c3;
-    color: white;
-    border-radius: 7px;
+   .modal-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 20px;
+    gap:20px
    }
+ 
+   input, textarea {
+   background-color: rgba(255, 255, 255, 0.7);
+   padding: 10px 20px;   
+   margin: 10px 20px 20px 20px;
+   height: auto;
+   border-radius: 10px;
+   border: 0;
+   -webkit-box-shadow: 0px 0px 16px 2px rgba(86, 86, 86, 0.2) inset;
+-moz-box-shadow: 0px 0px 16px 2px rgba(86, 86, 86, 0.2) inset;
+box-shadow: 0px 0px 16px 2px rgba(86, 86, 86, 0.2) inset;
+   display: block;
+   width:570px;
+   text-align: left;
+   font-size: 1.2rem;
+   }
+
+@media (max-width: 767px) { 
+   .modal-content {
+      max-width: 650px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;   
+      margin: 10px;
+   }
+ 
+   input, textarea {  
+     width: 90%;
+     padding: 10px;   
+     margin: 10px;
+   }
+   
+   .modal-content label {
+      margin: 0 10px;
+   }
+ }

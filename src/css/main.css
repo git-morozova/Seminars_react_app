@@ -47,7 +47,7 @@ h1 {
 }
 h2 {
   font-size: 2em;
-  line-height: 1.5;
+  line-height: 1.2;
 }
 ul {
   list-style-type: none;
@@ -86,7 +86,7 @@ ul {
  .seminar-photo {
   width: 250px;
   height: auto;
-  margin-top: 40px;
+  margin-top: 30px;
   border-radius: 20px;
   box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5), inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2), 0 -10px 15px -1px rgba(255, 255, 255, 0.6), inset 0 3px 4px -1px rgba(255, 255, 255, 0.2), inset 0 0 5px 1px rgba(255, 255, 255, 0.8), inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
 
@@ -100,7 +100,6 @@ ul {
 }
 
 /* кнопки */
-
 button {
   position: relative;
   height: 60px;
@@ -110,7 +109,7 @@ button {
   color: white;
   background: #111;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 15px;
   font-size: 18px;
   font-family: 'Raleway', sans-serif;
 }
@@ -122,7 +121,7 @@ button:before {
   left: -2px;
   height: calc(100% + 4px);
   width: calc(100% + 4px);
-  border-radius: 5px;
+  border-radius: 15px;
   z-index: -1;
   opacity: 0;
   filter: blur(5px);
@@ -156,19 +155,6 @@ button:hover:active:before {
   }
 }
 
-/* инпуты */
-input {
-background-color: rgba(255, 255, 255, 0.7);
-padding: 10px 20px;
-height: auto;
-border-radius: 10px;
-border: 0;
-box-shadow: inset 0px 6px 12px #cbced1, inset 0px -6px 6px white;
-display: block;
-width: 100%;
-text-align: left;
-font-size: 1.4rem;
-}
 
 
 @media (max-width: 767px) {
@@ -191,6 +177,6 @@ font-size: 1.4rem;
   }
   .seminar-photo {
     width: 100%;
-    padding: 40px 0;
+    padding: 0;
   }
 }
