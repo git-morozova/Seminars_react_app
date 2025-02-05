@@ -2,7 +2,6 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -10,22 +9,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  background: url(src/img/back.jpg);
 
+  background: url(src/img/back.jpg);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
   background-attachment: fixed;
 }
+
 #root {
-  margin: 0 auto;  
+  margin: 0 auto;
 }
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -37,7 +38,6 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  
 }
 
 h1 {
@@ -45,54 +45,57 @@ h1 {
   line-height: 1.1;
   text-align: center;
 }
+
 h2 {
   font-size: 2em;
   line-height: 1.2;
 }
+
 ul {
   list-style-type: none;
 }
 
 
 /* алерт */
- #--react--toast-container {
+#--react--toast-container {
   color: black;
- }
+}
 
 /* лоадер */
- .loaderImg {
+.loaderImg {
   width: 200px;
   height: auto;
- }
+}
 
 /* блоки с семинарами */
- .seminar-container {
+.seminar-container {
   border-bottom: 2px solid #747bff;
   display: grid;
-  padding:40px;
+  padding: 40px;
   border-radius: 20px;
   margin: 40px 0;
   background-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5), inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2), 0 -10px 15px -1px rgba(255, 255, 255, 0.6), inset 0 3px 4px -1px rgba(255, 255, 255, 0.2), inset 0 0 5px 1px rgba(255, 255, 255, 0.8), inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
+}
 
- }
- .seminar-container:hover {
+.seminar-container:hover {
   background-color: rgba(255, 255, 255, 0.23);
- }
- .seminar-info {  
+}
+
+.seminar-info {
   padding-right: 30px;
   width: 440px;
- }
- .seminar-photo {
+}
+
+.seminar-photo {
   width: 250px;
   height: auto;
   margin-top: 30px;
   border-radius: 20px;
   box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5), inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2), 0 -10px 15px -1px rgba(255, 255, 255, 0.6), inset 0 3px 4px -1px rgba(255, 255, 255, 0.2), inset 0 0 5px 1px rgba(255, 255, 255, 0.8), inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
+}
 
-
- }
- .seminar-buttons {
+.seminar-buttons {
   grid-column: span 2 / span 2;
   display: flex;
   gap: 20px;
@@ -147,34 +150,37 @@ button:hover:active:before {
   0% {
     background-position: 0 0;
   }
+
   50% {
     background-position: 400% 0;
   }
+
   100% {
     background-position: 0 0;
   }
 }
 
 
-
 @media (max-width: 767px) {
   .seminar-buttons {
     margin: 0 auto;
   }
+
   .seminar-container {
     display: flex;
     flex-direction: column;
     padding: 20px 20px;
-}
+  }
 
   body {
     max-width: 767px;
   }
 
-  .seminar-info {  
+  .seminar-info {
     width: 100%;
     padding-right: 0;
   }
+
   .seminar-photo {
     width: 100%;
     padding: 0;

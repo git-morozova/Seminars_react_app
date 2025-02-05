@@ -1,7 +1,4 @@
 import { FETCH_ACTIONS } from "../actions"
- /*
-    дополнить функцию-редуктор логикой обновления состояния
-*/
 
 const initialState = {
   items: [],
@@ -11,11 +8,12 @@ const initialState = {
 
 const reducer = (state, action) => {
 
+// функция-редуктор работает с состоянием на основе типа экшена
   switch (action.type) {
     case FETCH_ACTIONS.PROGRESS: {
       return {
         ...state,
-        loading: true,
+        loading: true, // для рендера лоадера
       }
     }
 
@@ -23,7 +21,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        items: action.data,
+        items: action.data, // рендер данных, например полученных из БД
       }
     }
 

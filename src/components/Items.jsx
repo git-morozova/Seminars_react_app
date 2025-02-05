@@ -2,120 +2,127 @@ import { useReducer, useState, useEffect } from "react";
 import { reducer, initialState } from "/src/reducers/reducer";
 import { FETCH_ACTIONS } from "/src/actions";
 import axios from "axios";
+
+// для алертов
 import { toast } from 'react-custom-alert';
 import 'react-custom-alert/dist/index.css'
+
+// для инпута с выбором даты
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+// картинки и доп.стили
 import loaderGif from '/src/img/loader.gif';
 import placeholderImg from '/src/img/placeholder.jpg';
 import '/src/css/modals.css'
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 const Items = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);  
-  let { items, loading, error} = state;    
+  const [state, dispatch] = useReducer(reducer, initialState); // получение значения стейт + dispatch
+  let { items, loading, error } = state; // свойства объекта состояния - деструктурируем их
   //console.log(items, loading, error);  
 
 
-  /*чтение списка из БД*/
+  // ЧТЕНИЕ СПИСКА ИЗ БД
   useEffect(() => {
-    dispatch({type: FETCH_ACTIONS.PROGRESS});   
+    dispatch({ type: FETCH_ACTIONS.PROGRESS }); // задаем экшн PROGRESS для отображения лоадера
 
     const getFromDataBase = async () => {
-      try{
-        let response = await axios.get("http://localhost:3000/seminars");
+      try {
+        let response = await axios.get("http://localhost:3000/seminars"); // запрос get в БД
 
-        if (response.status === 200) {
-          //имитируем долгую загрузку, чтобы посмотреть на лоадер
-          setTimeout(() => {
-            dispatch({type: FETCH_ACTIONS.SUCCESS, data: response.data});
-          }, 2000)          
+        if (response.status === 200) { // заголовок ответа - ОК          
+          setTimeout(() => { // имитируем долгую загрузку, чтобы посмотреть на лоадер
+            dispatch({ type: FETCH_ACTIONS.SUCCESS, data: response.data }); 
+          }, 2000)
         }
-      } catch(err){
-        toast.error("Ошибка загрузки");
-        dispatch({type: FETCH_ACTIONS.ERROR, error: err.message})
+      } catch (err) { // ловим ошибки
+        toast.error("Ошибка загрузки"); // toast - это алерты
+        dispatch({ type: FETCH_ACTIONS.ERROR, error: err.message })
       }
     }
-  
-    getFromDataBase();  
-  }, []); 
-    
 
+    getFromDataBase();
+  }, []);
+  // END - ЧТЕНИЕ СПИСКА ИЗ БД
+
+
+  // КОМПОНЕНТ МОДАЛЬНОГО ОКНА 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalContent, setModalContent] = useState('')
   const [modalType, setModalType] = useState(false)
-  
 
-  /* компонент модального окна */
   const Modal = ({ isModalOpen, modalContent, modalType, onClose }) => {
-
-
     if (isModalOpen !== true) {
       return null;
-    }  
-    if (modalType == 'delete') { // функция удаления
+    }
+    // УДАЛЕНИЕ ЗАПИСИ ИЗ БД    
+    if (modalType == 'delete') { // первый тип модального окна (передается параметром) - 'delete'
 
       const confirmDel = async () => {
-        try{
-          let response = await axios.delete('http://localhost:3000/seminars/' + modalContent);
-          if (response.status === 200) {
-
-            //обновим состояние items
-            items = items.filter(x => {
+        try {
+          let response = await axios.delete('http://localhost:3000/seminars/' + modalContent); // запрос
+          if (response.status === 200) { // успешно
+            
+            items = items.filter(x => { // обновим состояние items
               return x.id != modalContent;
             })
-            
-            dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
+
+            dispatch({ type: FETCH_ACTIONS.SUCCESS, data: items });
             setIsModalOpen(false);
             toast.success("Семинар удален");
           }
-        } catch(err){
-          setIsModalOpen(false);      
+        } catch (err) { // ошибка
+          setIsModalOpen(false);
           toast.error("Ошибка удаления");
-          dispatch({type: FETCH_ACTIONS.ERROR, data: items});
-        }         
-
+          dispatch({ type: FETCH_ACTIONS.ERROR, data: items });
+        }
       }
 
+      // рендер модального окна 'delete'
       return (
         <section className="modal">
           <article className="modal-content">
-              <p className="modal-title">Вы уверены, что хотите удалить семинар?</p>
-              <div className="modal-buttons">
-                <button onClick={() => confirmDel()}>Удалить</button>              
-                <button onClick={onClose}>Отмена</button>
-              </div>
+            <p className="modal-title">Вы уверены, что хотите удалить семинар?</p>
+            <div className="modal-buttons">
+              <button onClick={() => confirmDel()}>Удалить</button>
+              <button onClick={onClose}>Отмена</button>
+            </div>
           </article>
         </section>
       );
+      // END - УДАЛЕНИЕ ЗАПИСИ ИЗ БД
 
-    }  else if (modalType == "edit") { // функция редактирования
+    } else if (modalType == "edit") { // второй тип модального окна - 'edit'
+
+      // РЕДАКТИРОВАНИЕ ЗАПИСИ
       const [newDateInput, setNewDateInput] = useState(new Date());
 
       const confirmEdit = async () => {
-        try{       
-          // сюда переменные из инпутов
+        try {
+          // записываем значения из инпутов в переменные
           let newTitle = document.querySelector("#newTitle").value;
           let newDescription = document.querySelector("#newDescription").value;
           let newDate = document.querySelector("#newDate").value;
           let newTime = document.querySelector("#newTime").value;
           let newPhoto = document.querySelector("#newPhoto").value;
-         
-          //валидация
-          if(!newTitle) {
-            toast.error("Пожалуйста, введите название семинара"); 
-          } else if(!newDescription){
-            toast.error("Пожалуйста, введите описание");      
-          } else if(!newDate){
-            toast.error("Пожалуйста, введите дату");                  
+
+          //валидация полей
+          if (!newTitle) {
+            toast.error("Пожалуйста, введите название семинара");
+          } else if (!newDescription) {
+            toast.error("Пожалуйста, введите описание");
+          } else if (!newDate) {
+            toast.error("Пожалуйста, введите дату");
           } else if (!newTime) {
             toast.error("Пожалуйста, введите время");
           } else {
 
             if (!newPhoto) {
               newPhoto = placeholderImg //картинка-плейсхолдер, если нет ссылки
-            } 
-            // успешная валидация: запрос
+            }
+
+            // если успешная валидация - делаем запрос
             let response = await axios.put('http://localhost:3000/seminars/' + modalContent.id, {
               id: modalContent.id,
               title: newTitle,
@@ -125,79 +132,82 @@ const Items = () => {
               photo: newPhoto
             })
 
-            if (response.status === 200) {
-              let currebtId = modalContent.id;
+            if (response.status === 200) { // успех
 
               // обновим состояние items
+              let currebtId = modalContent.id;
+
               items = items.map(elem => {
                 if (elem.id === currebtId) {
                   return response.data;
                 } else {
                   return elem;
                 }
-              });            
-              
-              dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
+              });
+
+              dispatch({ type: FETCH_ACTIONS.SUCCESS, data: items });
               setIsModalOpen(false);
               toast.success("Семинар обновлен");
             }
           }
-        } catch(err){
-          setIsModalOpen(false); 
+        } catch (err) { // ловим ошибки
+          setIsModalOpen(false);
           toast.error("Ошибка сохранения");
-          dispatch({type: FETCH_ACTIONS.ERROR, data: items})
-        }    
+          dispatch({ type: FETCH_ACTIONS.ERROR, data: items })
+        }
       }
+
+      // рендер модального окна 'edit'
       return (
         <section className="modal">
           <article className="modal-content">
 
-              <label htmlFor="newTitle">
-                Тема:
-              </label>
-              <input id="newTitle" type="text" defaultValue={modalContent.title}/>
+            <label htmlFor="newTitle">
+              Тема:
+            </label>
+            <input id="newTitle" type="text" defaultValue={modalContent.title} />
 
-              <label htmlFor="newDescription">
-                Описание:
-              </label>
-              <textarea id="newDescription" defaultValue={modalContent.description}/>
-              
-              <label htmlFor="newDate">
-                Дата:
-              </label>
-              <DatePicker id="newDate" selected={newDateInput} dateFormat="dd.MM.yyyy" onChange={(date) => setNewDateInput(date)} />
-                           
-              <label htmlFor="newTime">
-                Время:
-              </label>
-              <input id="newTime" type="time" defaultValue={modalContent.time}/>
-              
-              <label htmlFor="newPhoto">
-                Фото:
-              </label>
-              <input id="newPhoto" type="text" defaultValue={modalContent.photo}/>              
+            <label htmlFor="newDescription">
+              Описание:
+            </label>
+            <textarea id="newDescription" defaultValue={modalContent.description} />
 
-              <div className="modal-buttons">
-                <button onClick={() => confirmEdit()}>Сохранить</button>               
-                <button onClick={onClose}>Отмена</button>
-              </div>
+            <label htmlFor="newDate">
+              Дата:
+            </label>
+            <DatePicker id="newDate" selected={newDateInput} dateFormat="dd.MM.yyyy" onChange={(date) => setNewDateInput(date)} />
+
+            <label htmlFor="newTime">
+              Время:
+            </label>
+            <input id="newTime" type="time" defaultValue={modalContent.time} />
+
+            <label htmlFor="newPhoto">
+              Фото:
+            </label>
+            <input id="newPhoto" type="text" defaultValue={modalContent.photo} />
+
+            <div className="modal-buttons">
+              <button onClick={() => confirmEdit()}>Сохранить</button>
+              <button onClick={onClose}>Отмена</button>
+            </div>
           </article>
-        </section>        
+        </section>
       );
+      // END - РЕДАКТИРОВАНИЕ ЗАПИСИ
     }
   };
+  // END - КОМПОНЕНТ МОДАЛЬНОГО ОКНА
 
-
-  /*удаление элемента из БД*/  
-  function handleDelete(item) {  
+  // ЗАДАЕМ СТЕЙТЫ ДЛЯ МОДАЛЬНОГО ОКНА
+  function handleDelete(item) {
     setIsModalOpen(true);
     setModalContent(item.id);
     setModalType('delete');
 
   };
 
-  /* редактирование элемента */  
-  function handleEdit(item) {  
+  function handleEdit(item) {
     setIsModalOpen(true);
     setModalContent(item);
     setModalType('edit');
@@ -206,31 +216,34 @@ const Items = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  // END - ЗАДАЕМ СТЕЙТЫ ДЛЯ МОДАЛЬНОГО ОКНА
 
-
+  
+  // РЕНДЕР ОСНОВНОГО КОМПОНЕНТА
+  // показываем лоадер, если значение свойства загрузки состояния равно true
   return (
     <>
       {
         loading ? (
-          <img src={loaderGif} className="loaderImg"/>
+          <img src={loaderGif} className="loaderImg" />
         ) : error ? (
           <p>{error}</p>
         ) : (
-          <> 
-          <h1>Семинары</h1>
-          <section >
+          <>
+            <h1>Семинары</h1>
+            <section >
               {
                 items.map((item) => (
-                
-                  <article                   
-                    key={item.id} id={item.id}  className="seminar-container">
+
+                  <article
+                    key={item.id} id={item.id} className="seminar-container">
 
                     <div className="seminar-info">
                       <h2>
-                         {item.title}
+                        {item.title}
                       </h2>
                       <p>
-                         <strong>Описание:</strong> {item.description}
+                        <strong>Описание:</strong> {item.description}
                       </p>
                       <p>
                         <strong>Дата:</strong> {item.date}
@@ -240,37 +253,38 @@ const Items = () => {
                       </p>
                     </div>
 
-                    <img src={item.photo} className="seminar-photo" alt="Пожалуйста, включите VPN"/>  
-                    
-                    <div className="seminar-buttons">         
+                    <img src={item.photo} className="seminar-photo" alt="Пожалуйста, включите VPN" />
 
-                      <button onClick={ handleEdit.bind(this, item)} >
+                    <div className="seminar-buttons">
+
+                      <button onClick={handleEdit.bind(this, item)} >
                         Редактировать
                       </button>
 
-                      <button onClick={ handleDelete.bind(this, item)}>
+                      <button onClick={handleDelete.bind(this, item)}>
                         <span>Удалить</span>
-                      </button>                     
-                    </div>  
+                      </button>
+                    </div>
 
                   </article>
                 ))
-              }              
-          </section>
+              }
+            </section>
           </>
         )
       }
       <section>
-       <Modal
-         isModalOpen={isModalOpen}
-         modalContent={modalContent}
-         modalType={modalType}
-         onClose={closeModal}
-       />
+        <Modal
+          isModalOpen={isModalOpen}
+          modalContent={modalContent}
+          modalType={modalType}
+          onClose={closeModal}
+        />
       </section>
 
     </>
   )
+  // END - РЕНДЕР ОСНОВНОГО КОМПОНЕНТА
 }
 
 export default Items;
