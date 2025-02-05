@@ -24,7 +24,6 @@ const Items = () => {
         if (response.status === 200) {
           //имитируем долгую загрузку, чтобы посмотреть на лоадер
           setTimeout(() => {
-            toast.success("Список семинаров успешно загружен");
             dispatch({type: FETCH_ACTIONS.SUCCESS, data: response.data});
           }, 2000)          
         }
@@ -75,13 +74,13 @@ const Items = () => {
       return (
         <section className="modal">
           <article className="modal-content p-lg-4">
-            <div className="exit-icon text-end">
-              <button onClick={onClose}>Закрыть</button>
-            </div>
             <main className="modal-mainContents">
-              <h5 className="modal-title">Удалить семинар с id = {modalContent}?</h5>
+              <p className="modal-title">Вы уверены, что хотите удалить семинар?</p>
               <div className="modal-button text-end">
-                <button onClick={() => confirmDel()}>Да</button> 
+                <button onClick={() => confirmDel()}>Удалить</button> 
+              </div>              
+              <div className="exit-icon text-end">
+                <button onClick={onClose}>Отмена</button>
               </div>
             </main>
           </article>
@@ -136,35 +135,30 @@ const Items = () => {
       return (
         <section className="modal">
           <article className="modal-content p-lg-4">
-            <div className="exit-icon text-end">
-              <button onClick={onClose}>Закрыть</button>
-            </div>
             <main className="modal-mainContents">
 
               <label>
                 Тема: <input id="newTitle" type="text" defaultValue={modalContent.title}/>
               </label>
-              <br/>
               <label>
-              Описание: <input id="newDescription" type="text" defaultValue={modalContent.description}/>
+                Описание: <input id="newDescription" type="text" defaultValue={modalContent.description}/>
               </label>
-              <br/>
               <label>
-              Дата: <input id="newDate" type="text" defaultValue={modalContent.date}/>
+                Дата: <input id="newDate" type="text" defaultValue={modalContent.date}/>
               </label>
-              <br/>
               <label>
-              Время: <input id="newTime" type="text" defaultValue={modalContent.time}/>
+                Время: <input id="newTime" type="text" defaultValue={modalContent.time}/>
               </label>
-              <br/>
               <label>
-              Фото: <input id="newPhoto" type="text" defaultValue={modalContent.photo}/>
+                Фото: <input id="newPhoto" type="text" defaultValue={modalContent.photo}/>
               </label>
 
-              <h5 className="modal-title">Сохранить изменения для семинара с id = {modalContent.id}?</h5>
               <div className="modal-button text-end">
-                <button onClick={() => confirmEdit()}>Да</button> 
+                <button onClick={() => confirmEdit()}>Сохранить</button> 
               </div>
+              <div className="exit-icon text-end">
+              <button onClick={onClose}>Отмена</button>
+            </div>
             </main>
           </article>
         </section>        
@@ -194,46 +188,55 @@ const Items = () => {
 
 
   return (
-    <div>
+    <>
       {
         loading ? (
           <img src={loaderGif} className="loaderImg"/>
         ) : error ? (
           <p>{error}</p>
         ) : (
+          <> 
+          <h1>Семинары</h1>
           <section >
               {
                 items.map((item) => (
                 
                   <article                   
-                    key={item.id} className="seminar-container">
+                    key={item.id} id={item.id}  className="seminar-container">
 
-                    <p>
-                      id: <strong>{item.id}</strong>
-                    </p>
-                    <p>
-                      Тема: <strong>{item.title}</strong>
-                    </p>
-                    <p>
-                      Описание: <strong>{item.description}</strong>
-                    </p>
-                    <p>
-                      Дата: <strong>{item.date}</strong>
-                    </p>
-                    <p>
-                      Время: <strong>{item.time}</strong>
-                    </p>
+                    <div className="seminar-info">
+                      <h2>
+                         {item.title}
+                      </h2>
+                      <p>
+                        Описание: <strong>{item.description}</strong>
+                      </p>
+                      <p>
+                        Дата: <strong>{item.date}</strong>
+                      </p>
+                      <p>
+                        Время: <strong>{item.time}</strong>
+                      </p>
+                    </div>
                     
-                    <img src={item.photo}/>  <br/>                   
+                    <img src={item.photo} className="seminar-photo"/>  
+                    
+                    <div className="seminar-buttons">         
 
-                      <button onClick={ handleEdit.bind(this, item)}>Редактировать</button>&nbsp;
+                      <button onClick={ handleEdit.bind(this, item)} >
+                        Редактировать
+                      </button>
 
-                      <button onClick={ handleDelete.bind(this, item)}>Удалить</button>                     
+                      <button onClick={ handleDelete.bind(this, item)}>
+                        <span>Удалить</span>
+                      </button>                     
+                    </div>  
 
                   </article>
                 ))
               }              
           </section>
+          </>
         )
       }
       <section>
@@ -244,7 +247,8 @@ const Items = () => {
          onClose={closeModal}
        />
       </section>
-    </div>
+
+    </>
   )
 }
 

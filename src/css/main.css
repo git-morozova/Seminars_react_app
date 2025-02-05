@@ -2,8 +2,7 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
+  
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -11,8 +10,17 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+  
+  background: url(src/img/back.jpg);
 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+}
+#root {
+  margin: 0 auto;  
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -23,51 +31,26 @@ a:hover {
 }
 
 body {
-  margin: 0;
+  margin: 0 auto;
+  max-width: 800px;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  text-align: center;
+}
+h2 {
+  font-size: 2em;
+  line-height: 1.5;
 }
 ul {
   list-style-type: none;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
 
 
@@ -82,6 +65,132 @@ button:focus-visible {
   height: auto;
  }
 
+/* блоки с семинарами */
  .seminar-container {
   border-bottom: 2px solid #747bff;
+  display: grid;
+  padding:40px;
+  border-radius: 20px;
+  margin: 40px 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5), inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2), 0 -10px 15px -1px rgba(255, 255, 255, 0.6), inset 0 3px 4px -1px rgba(255, 255, 255, 0.2), inset 0 0 5px 1px rgba(255, 255, 255, 0.8), inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
+
  }
+ .seminar-container:hover {
+  background-color: rgba(255, 255, 255, 0.23);
+ }
+ .seminar-info {  
+  padding-right: 30px;
+  width: 440px;
+ }
+ .seminar-photo {
+  width: 250px;
+  height: auto;
+  margin-top: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5), inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2), 0 -10px 15px -1px rgba(255, 255, 255, 0.6), inset 0 3px 4px -1px rgba(255, 255, 255, 0.2), inset 0 0 5px 1px rgba(255, 255, 255, 0.8), inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
+
+
+ }
+ .seminar-buttons {
+  grid-column: span 2 / span 2;
+  display: flex;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+/* кнопки */
+
+button {
+  position: relative;
+  height: 60px;
+  width: 200px;
+  border: none;
+  outline: none;
+  color: white;
+  background: #111;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 18px;
+  font-family: 'Raleway', sans-serif;
+}
+
+button:before {
+  position: absolute;
+  content: '';
+  top: -2px;
+  left: -2px;
+  height: calc(100% + 4px);
+  width: calc(100% + 4px);
+  border-radius: 5px;
+  z-index: -1;
+  opacity: 0;
+  filter: blur(5px);
+  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  background-size: 400%;
+  transition: opacity .3s ease-in-out;
+  animation: animate 20s linear infinite;
+}
+
+button:hover:before {
+  opacity: 1;
+}
+
+button:hover:active {
+  background: none;
+}
+
+button:hover:active:before {
+  filter: blur(2px);
+}
+
+@keyframes animate {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* инпуты */
+input {
+background-color: rgba(255, 255, 255, 0.7);
+padding: 10px 20px;
+height: auto;
+border-radius: 10px;
+border: 0;
+box-shadow: inset 0px 6px 12px #cbced1, inset 0px -6px 6px white;
+display: block;
+width: 100%;
+text-align: left;
+font-size: 1.4rem;
+}
+
+
+@media (max-width: 767px) {
+  .seminar-buttons {
+    margin: 0 auto;
+  }
+  .seminar-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px;
+}
+
+  body {
+    max-width: 767px;
+  }
+
+  .seminar-info {  
+    width: 100%;
+    padding-right: 0;
+  }
+  .seminar-photo {
+    width: 100%;
+    padding: 40px 0;
+  }
+}
