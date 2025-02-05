@@ -34,6 +34,9 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+ul {
+  list-style-type: none;
+}
 
 button {
   border-radius: 8px;
@@ -68,45 +71,17 @@ button:focus-visible {
 }
 
 
+/* алерт */
+ #--react--toast-container {
+  color: black;
+ }
 
-.modal {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* лоадер */
+ .loaderImg {
+  width: 200px;
+  height: auto;
  }
- .modal-content {
-  border: 1px solid #fff;
-  width: 500px;
-  background-color: #fff;
-  border-radius: 15px;
- }
- .exit-icon {
-  cursor: pointer;
-  font-size: 20px;
- }
- .modal-title {
-  color: #6821c3;
-  font-weight: 700;
-  font-size: 30px;
-  line-height: 28px;
- }
- .modal-image img {
-  width: 8rem;
- }
- .modalText {
-  text-align: justify;
- }
- .modal-button button {
-  border: 1px solid #6821c3;
-  padding: 6px;
-  width: 8rem;
-  background-color: #6821c3;
-  color: white;
-  border-radius: 7px;
+
+ .seminar-container {
+  border-bottom: 2px solid #747bff;
  }

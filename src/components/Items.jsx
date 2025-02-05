@@ -2,24 +2,34 @@ import { useReducer, useState, useEffect } from "react";
 import { reducer, initialState } from "/src/reducers/reducer";
 import { FETCH_ACTIONS } from "/src/actions";
 import axios from "axios";
+import { toast } from 'react-custom-alert';
+import 'react-custom-alert/dist/index.css'
+import loaderGif from '/src/img/loader.gif';
+import '/src/css/modals.css'
 
 const Items = () => {
   const [state, dispatch] = useReducer(reducer, initialState);  
   let { items, loading, error} = state;    
-  //console.log(items, loading, error);   
+  //console.log(items, loading, error);  
+
 
   /*чтение списка из БД*/
   useEffect(() => {
-    dispatch({type: FETCH_ACTIONS.PROGRESS});    
+    dispatch({type: FETCH_ACTIONS.PROGRESS});   
 
     const getFromDataBase = async () => {
       try{
         let response = await axios.get("http://localhost:3000/seminars");
+
         if (response.status === 200) {
-          dispatch({type: FETCH_ACTIONS.SUCCESS, data: response.data});
+          //имитируем долгую загрузку, чтобы посмотреть на лоадер
+          setTimeout(() => {
+            toast.success("Список семинаров успешно загружен");
+            dispatch({type: FETCH_ACTIONS.SUCCESS, data: response.data});
+          }, 2000)          
         }
       } catch(err){
-        console.error(err);
+        toast.error("Ошибка загрузки");
         dispatch({type: FETCH_ACTIONS.ERROR, error: err.message})
       }
     }
@@ -40,24 +50,25 @@ const Items = () => {
     }  
     if (modalType == 'delete') { // функция удаления
 
-      const confirmDel = () => {
-        axios.delete('http://localhost:3000/seminars/' + modalContent)
+      const confirmDel = async () => {
+        try{
+          let response = await axios.delete('http://localhost:3000/seminars/' + modalContent);
+          if (response.status === 200) {
 
-        .then(response => {
-            console.log('Item deleted:', response.data); 
             //обновим состояние items
             items = items.filter(x => {
               return x.id != modalContent;
             })
-            console.log('Items refreshed');
+            
             dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
             setIsModalOpen(false);
-        })
-
-        .catch(error => {
-            console.error('Error deleting item:', error);
-            dispatch({type: FETCH_ACTIONS.ERROR, error: error.message})
-        });   
+            toast.success("Семинар удален");
+          }
+        } catch(err){
+          setIsModalOpen(false);      
+          toast.error("Ошибка удаления");
+          dispatch({type: FETCH_ACTIONS.ERROR, data: items});
+        }         
 
       }
 
@@ -79,50 +90,47 @@ const Items = () => {
 
     }  else if (modalType == "edit") { // функция редактирования
 
-      const confirmEdit = () => {
-              
-        /*сюда переменные из инпутов*/
-        let newTitle = document.querySelector("#newTitle").value;
-        let newDescription = document.querySelector("#newDescription").value;
-        let newDate = document.querySelector("#newDate").value;
-        let newTime = document.querySelector("#newTime").value;
-        let newPhoto = document.querySelector("#newPhoto").value;
+      const confirmEdit = async () => {
+        try{        
+ 
+          // сюда переменные из инпутов
+          let newTitle = document.querySelector("#newTitle").value;
+          let newDescription = document.querySelector("#newDescription").value;
+          let newDate = document.querySelector("#newDate").value;
+          let newTime = document.querySelector("#newTime").value;
+          let newPhoto = document.querySelector("#newPhoto").value;
+  
+          // запрос
+          let response = await axios.put('http://localhost:3000/seminars/' + modalContent.id, {
+            id: modalContent.id,
+            title: newTitle,
+            description: newDescription,
+            date: newDate,
+            time: newTime,
+            photo: newPhoto
+          })
 
-        //запрос
-        axios.put('http://localhost:3000/seminars/' + modalContent.id, {
-          id: modalContent.id,
-          title: newTitle,
-          description: newDescription,
-          date: newDate,
-          time: newTime,
-          photo: newPhoto
-        })
-        
-        .then(response => {
-            console.log('Item edited:', response.data);  
-
+          if (response.status === 200) {
             let currebtId = modalContent.id;
 
-            //обновим состояние items
+            // обновим состояние items
             items = items.map(elem => {
               if (elem.id === currebtId) {
                 return response.data;
               } else {
                 return elem;
               }
-            });
+            });            
             
-            
-            console.log('Items refreshed');
             dispatch({type: FETCH_ACTIONS.SUCCESS, data: items});       
             setIsModalOpen(false);
-        })
-
-        .catch(error => {
-            console.error('Error editing item:', error);
-            dispatch({type: FETCH_ACTIONS.ERROR, error: error.message})
-        });   
-
+            toast.success("Семинар обновлен");
+          }
+        } catch(err){
+          setIsModalOpen(false); 
+          toast.error("Ошибка сохранения");
+          dispatch({type: FETCH_ACTIONS.ERROR, data: items})
+        }    
       }
 
       return (
@@ -159,7 +167,7 @@ const Items = () => {
               </div>
             </main>
           </article>
-        </section>
+        </section>        
       );
     }
   };
@@ -167,7 +175,6 @@ const Items = () => {
 
   /*удаление элемента из БД*/  
   function handleDelete(item) {  
-    console.log('In delete item', item);
     setIsModalOpen(true);
     setModalContent(item.id);
     setModalType('delete');
@@ -176,7 +183,6 @@ const Items = () => {
 
   /* редактирование элемента */  
   function handleEdit(item) {  
-    console.log('In edit item', item);
     setIsModalOpen(true);
     setModalContent(item);
     setModalType('edit');
@@ -191,55 +197,53 @@ const Items = () => {
     <div>
       {
         loading ? (
-          <p>Загрузка...</p>
+          <img src={loaderGif} className="loaderImg"/>
         ) : error ? (
           <p>{error}</p>
         ) : (
-          <ul>
-            {
-              items.map((item) => (
-               
-                <li                   
-                  key={item.id}>
+          <section >
+              {
+                items.map((item) => (
+                
+                  <article                   
+                    key={item.id} className="seminar-container">
 
-                  <p>
-                    id: <strong>{item.id}</strong>
-                  </p>
-                  <p>
-                    Тема: <strong>{item.title}</strong>
-                  </p>
-                  <p>
-                    Описание: <strong>{item.description}</strong>
-                  </p>
-                  <p>
-                    Дата: <strong>{item.date}</strong>
-                  </p>
-                  <p>
-                    Время: <strong>{item.time}</strong>
-                  </p>
-                  
-                  <img src={item.photo}/>  <br/>                   
+                    <p>
+                      id: <strong>{item.id}</strong>
+                    </p>
+                    <p>
+                      Тема: <strong>{item.title}</strong>
+                    </p>
+                    <p>
+                      Описание: <strong>{item.description}</strong>
+                    </p>
+                    <p>
+                      Дата: <strong>{item.date}</strong>
+                    </p>
+                    <p>
+                      Время: <strong>{item.time}</strong>
+                    </p>
+                    
+                    <img src={item.photo}/>  <br/>                   
 
-                    <button onClick={ handleEdit.bind(this, item)}>Редактировать</button>&nbsp;
+                      <button onClick={ handleEdit.bind(this, item)}>Редактировать</button>&nbsp;
 
-                    <button onClick={ handleDelete.bind(this, item)}>Удалить</button>                     
+                      <button onClick={ handleDelete.bind(this, item)}>Удалить</button>                     
 
-                </li>
-              ))
-            }
-            
-          </ul>
+                  </article>
+                ))
+              }              
+          </section>
         )
       }
-
-<section>
- <Modal
-   isModalOpen={isModalOpen}
-   modalContent={modalContent}
-   modalType={modalType}
-   onClose={closeModal}
- />
-</section>
+      <section>
+       <Modal
+         isModalOpen={isModalOpen}
+         modalContent={modalContent}
+         modalType={modalType}
+         onClose={closeModal}
+       />
+      </section>
     </div>
   )
 }
