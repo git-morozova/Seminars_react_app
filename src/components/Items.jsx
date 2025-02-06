@@ -101,35 +101,58 @@ const Items = () => {
       const confirmEdit = async () => {
         try {
           // записываем значения из инпутов в переменные
-          let newTitle = document.querySelector("#newTitle").value;
-          let newDescription = document.querySelector("#newDescription").value;
-          let newDate = document.querySelector("#newDate").value;
-          let newTime = document.querySelector("#newTime").value;
-          let newPhoto = document.querySelector("#newPhoto").value;
+          let newTitle = document.querySelector("#newTitle");
+          let newDescription = document.querySelector("#newDescription");
+          let newDate = document.querySelector("#newDate");
+          let newTime = document.querySelector("#newTime");
+          let newPhoto = document.querySelector("#newPhoto");
 
-          //валидация полей
-          if (!newTitle) {
-            toast.error("Пожалуйста, введите название семинара");
-          } else if (!newDescription) {
-            toast.error("Пожалуйста, введите описание");
-          } else if (!newDate) {
-            toast.error("Пожалуйста, введите дату");
-          } else if (!newTime) {
-            toast.error("Пожалуйста, введите время");
-          } else {
+          // уберем красную рамку при вводе в инпут, если ранее была подсветка с ошибкой ввода                  
+          function clearInputError (inputBlock) {
+            inputBlock.oninput = function() {
+              inputBlock.classList.remove('input-error');
+            };
+          };
+          clearInputError(newTitle);
+          clearInputError(newDescription);
+          clearInputError(newDate);
+          clearInputError(newTime);          
 
-            if (!newPhoto) {
-              newPhoto = placeholderImg //картинка-плейсхолдер, если нет ссылки
+          // валидация полей - проверка на пустые значения
+          function validationInput (inputBlock) {
+            if (!inputBlock.value) {
+              inputBlock.classList.add('input-error');
+              switch (inputBlock) {
+                case newTitle: toast.error("Пожалуйста, введите название семинара")
+                break
+                case newDescription: toast.error("Пожалуйста, введите описание")
+                break
+                case newDate: toast.error("Пожалуйста, введите дату")
+                break
+                case newTime: toast.error("Пожалуйста, введите время")
+                break
+              };
+              return false
+            } else { 
+              return true 
+            } 
+          };
+
+          // валидация прошла
+          if (validationInput(newTitle) && validationInput(newDescription) && validationInput(newDate) && validationInput(newTime) ){
+           
+            if (!newPhoto.value) {
+              newPhoto.value = placeholderImg //картинка-плейсхолдер, если нет ссылки
             }
 
-            // если успешная валидация - делаем запрос
+            // делаем запрос
             let response = await axios.put('http://localhost:3000/seminars/' + modalContent.id, {
               id: modalContent.id,
-              title: newTitle,
-              description: newDescription,
-              date: newDate,
-              time: newTime,
-              photo: newPhoto
+              title: newTitle.value,
+              description: newDescription.value,
+              date: newDate.value,
+              time: newTime.value,
+              photo: newPhoto.value
             })
 
             if (response.status === 200) { // успех
@@ -163,22 +186,22 @@ const Items = () => {
           <article className="modal-content">
 
             <label htmlFor="newTitle">
-              Тема:
+              Тема:<span>*</span>
             </label>
             <input id="newTitle" type="text" defaultValue={modalContent.title} />
 
             <label htmlFor="newDescription">
-              Описание:
+              Описание:<span>*</span>
             </label>
             <textarea id="newDescription" defaultValue={modalContent.description} />
 
             <label htmlFor="newDate">
-              Дата:
+              Дата:<span>*</span>
             </label>
             <DatePicker id="newDate" selected={newDateInput} dateFormat="dd.MM.yyyy" onChange={(date) => setNewDateInput(date)} />
 
             <label htmlFor="newTime">
-              Время:
+              Время:<span>*</span>
             </label>
             <input id="newTime" type="time" defaultValue={modalContent.time} />
 

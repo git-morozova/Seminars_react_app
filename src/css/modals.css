@@ -25,7 +25,12 @@
 .modal-content label {
    margin: 20px;
 }
-
+.modal-content label span {
+   color: red;
+}
+.input-error {
+   border: 1px solid red;
+}
 .modal-title {
    color: #242424;
    font-weight: 700;
