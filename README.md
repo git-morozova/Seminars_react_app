@@ -2,6 +2,14 @@
 
 ![screen](public/screen.png)
 
+
+## Инструменты
+
+- React + Vite
+- axios, json-server, concurrently, custom-alert, datepicker
+- HTML5, CSS3
+
+
 ## Как запустить
 
 `npm install`
